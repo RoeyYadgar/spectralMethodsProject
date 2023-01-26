@@ -16,11 +16,22 @@ SGcopy = subgraph(SG,[2:size(SG.Nodes,1)]);
 bins2connected = biconncomp(SGcopy); %returns an index of the compontent for each edge in the graph
 numComp = length(unique(bins2connected));
 
-patches = cell(numComp,1);
+patches = cell(numComp*2,1);
+counter = 1;
 for i = 1:numComp
     patchesNodes = unique(SGcopy.Edges{bins2connected == i,1}(:)); %get all the nodes of the corresponding edges of the component 
-    patches{i} = subgraph(SG,[starNodeName ; patchesNodes]);
+    patch = subgraph(SG,[starNodeName ; patchesNodes]);
+    if(height(patch.Nodes) >= inf)
+        subpatches = splitPatch(patch);
+        patches{counter} = subpatches{1};
+        patches{counter+1} = subpatches{2};
+        counter = counter+2;
+    else
+        patches{counter} = patch;
+        counter = counter+1;
+    end
 end
-    
+
+patches = patches(1:(counter-1));
 
 end

@@ -37,7 +37,34 @@ for i = 1:N
 end
 
 %Perfrom classical MDS:
-nodesPos = mdscale(estimatedDistMatrix,2);
+nodesPos = cmdscale(estimatedDistMatrix,2);
+
+%Perfrom iteartive majorization techinque to minimize the stress function:
+nodeDegs = degree(patch);
+updatedNodesPos = zeros(size(nodesPos));
+iterativeDifference = 1;
+while(iterativeDifference > 1e-5) %perfrom iterations until the chance between consectuve iterations is small 
+    for i = 1:N
+        newNodePosSum = [0 0];
+        for j = 1:N
+           if(distMatrix(i,j) > 0)
+               Pi = nodesPos(i,:);
+               Pj = nodesPos(j,:);
+               Dij = distMatrix(i,j);
+               normPiPj = norm(Pi-Pj);
+               invNormPiPj = 1/normPiPj * (normPiPj == 0); %inverse should be 0 if the norm itself is 0
+               newNodePosSum = newNodePosSum + (Pi + Dij*(Pi-Pj)*invNormPiPj);      
+           end
+        end
+        updatedNodesPos(i,:) = newNodePosSum / nodeDegs(i);
+        
+    end
+    
+    iterativeDifference = mean(vecnorm((nodesPos-updatedNodesPos)'));
+    nodesPos = updatedNodesPos;
+    
+end
+
 
 
 
