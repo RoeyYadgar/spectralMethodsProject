@@ -25,6 +25,7 @@ N = size(patches,1); %number of total patches
 patchReflection = sparse(N,N);
 patchRotation = sparse(N,N);
 patchTranslation = sparse(N,N);
+C = sparse(N,N);
 A = sparse(N,N);
 Res = zeros(N,N,2);
 Val = zeros(N,N,2);
@@ -32,6 +33,7 @@ for i = 1:N
     for j = (i+1):N
         if(adjacencySquared(patches{i,2},patches{j,2}) > 0)
             commonNodes = (intersect(patches{i,1}.Nodes.Name, patches{j,1}.Nodes.Name));
+            C(i,j) = length(commonNodes);
             if(length(commonNodes) >= 3)
                 [reflection,rotation,translation,Res(i,j,1),Res(i,j,2)] = alignPatchesLSregis(patches{i,1},patches{j,1},commonNodes);
                 patchReflection(i,j) = reflection;

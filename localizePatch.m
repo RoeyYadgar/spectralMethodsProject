@@ -52,8 +52,8 @@ while(iterativeDifference > 1e-5) %perfrom iterations until the chance between c
                Pj = nodesPos(j,:);
                Dij = distMatrix(i,j);
                normPiPj = norm(Pi-Pj);
-               invNormPiPj = 1/normPiPj * (normPiPj == 0); %inverse should be 0 if the norm itself is 0
-               newNodePosSum = newNodePosSum + (Pi + Dij*(Pi-Pj)*invNormPiPj);      
+               invNormPiPj = 1/normPiPj * (normPiPj ~= 0); %inverse should be 0 if the norm itself is 0
+               newNodePosSum = newNodePosSum + (Pj + Dij*(Pi-Pj)*invNormPiPj);      
            end
         end
         updatedNodesPos(i,:) = newNodePosSum / nodeDegs(i);

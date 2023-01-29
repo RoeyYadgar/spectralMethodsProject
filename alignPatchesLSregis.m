@@ -53,8 +53,8 @@ translation = result(2) + (abs(result(1))-1) * meanPatch2 *rotation;
 residualNonReflected = xResidual;
 residualReflected = yResidual;
 
-plotPatch(patch1,patch1Pos)
-hold on
-plotPatch(patch2,patch2Pos*x(1)+x(2));
-plotPatch(patch2,conj(patch2Pos)*y(1)+y(2));
+% plotPatch(patch1,patch1Pos)
+% hold on
+% plotPatch(patch2,patch2Pos*x(1)+x(2));
+% plotPatch(patch2,conj(patch2Pos)*y(1)+y(2));
 end

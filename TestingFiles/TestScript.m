@@ -15,9 +15,11 @@ patches = starGraphRigidPatches(g);
 
 load('uscities.mat');
 dataPoints = uscities(1:3,:)';
-G = generateGraphDiscModel(dataPoints,0.032);
+rho = 0.032;
+G = generateGraphDiscModel(dataPoints,rho);
 W = adjacency(G,'weighted');
-
+patches = splitGraphToGloballiyRigidsComps(G);
+%%
 i = 2;
 edges = table2array(G.Edges);
 nodes1 = edges(find(edges(:,1) == i),2);
@@ -44,13 +46,14 @@ gamma = sparse(diag(t)*B*diag(t.^-1));
 T = sign(rand(N,N)-0.2);
 z = gamma.*T;
 Z = sparse(diag(sum(abs(z),2).^(-1)))*z;
-[V,D] = eigs(Z,1)
+[V,D] = eigs(Z,5)
 plot(V(:,1))
 %%
 Y = (dataPoints(:,1)-dataPoints(:,1)').^2 + (dataPoints(:,2)-dataPoints(:,2)').^2 +(dataPoints(:,3)-dataPoints(:,3)').^2;
 Y = sqrt(Y);
 x = cmdscale(Y,2);
 %%
+N = length(patches);
 reflections = zeros(N,1);
 rotations = zeros(N,1);
 for i = 1:N
@@ -62,6 +65,20 @@ for i = 1:N
     realPosPatch.Nodes.Pos = realPos;
     [reflections(i),rotations(i)] = alignPatchesLSregis(realPosPatch,patches{i,1},realPosPatch.Nodes.Name);
 end
+%%
+B = sparse(A >= 2);
+pRef = diag(reflections)*B*diag(reflections);
+pRot = diag(rotations)*B*diag(rotations.^-1);
+refErr = pRef - patchReflection;
+rotErr = pRot - patchRotation;
+plot(sum(abs(refErr/2))./sum(abs(B)))
+%%
+subplot(2,1,1)
+plotPatch(patches{i,1})
+axis('equal')
+subplot(2,1,2)
+plotPatch(patches{i,1},x(cellfun(@str2num,patches{i,1}.Nodes.Name),:));
+axis('equal')
 %%
 %Q1: what is the prescribed size in page 25?
 %Q1.5: how to split a patch that is too big?
