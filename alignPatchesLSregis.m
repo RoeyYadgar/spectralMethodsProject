@@ -44,7 +44,7 @@ end
 %translation to account for the non rescaled position of patch2
 rotation = result(1)/abs(result(1));
 meanPatch2 = mean(patch2Pos);
-if(relfection == -1)
+if(reflection == -1)
     meanPatch2 = conj(meanPatch2);
 end
 translation = result(2) + (abs(result(1))-1) * meanPatch2 *rotation;
@@ -53,10 +53,8 @@ translation = result(2) + (abs(result(1))-1) * meanPatch2 *rotation;
 residualNonReflected = xResidual;
 residualReflected = yResidual;
 
-% plot(patch1,'XData',patch1.Nodes.Pos(:,1),'YData',patch1.Nodes.Pos(:,2))
-% hold on
-% plot(patch2,'XData',patch2.Nodes.Pos(:,1),'YData',patch2.Nodes.Pos(:,2))
-% plot(patch2,'XData',real((patch2Pos)*rotation+translation)...
-%     ,'YData',imag((patch2Pos)*rotation+translation))
-
+plotPatch(patch1,patch1Pos)
+hold on
+plotPatch(patch2,patch2Pos*x(1)+x(2));
+plotPatch(patch2,conj(patch2Pos)*y(1)+y(2));
 end
