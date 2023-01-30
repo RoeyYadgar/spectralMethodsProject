@@ -45,9 +45,11 @@ t = 2*(randi(2,N,1)-1.5);
 gamma = sparse(diag(t)*B*diag(t.^-1));
 T = sign(rand(N,N)-0.2);
 z = gamma.*T;
+%%
+z = sparse(patchRotation);
 Z = sparse(diag(sum(abs(z),2).^(-1)))*z;
 [V,D] = eigs(Z,5)
-plot(V(:,1))
+plot(abs(V(:,1)))
 %%
 Y = (dataPoints(:,1)-dataPoints(:,1)').^2 + (dataPoints(:,2)-dataPoints(:,2)').^2 +(dataPoints(:,3)-dataPoints(:,3)').^2;
 Y = sqrt(Y);
@@ -56,6 +58,7 @@ x = cmdscale(Y,2);
 N = length(patches);
 reflections = zeros(N,1);
 rotations = zeros(N,1);
+res = zeros(N,1);
 for i = 1:N
     realPosPatch = patches{i,1};
 %     realPosPatch.Nodes.Pos = 
@@ -63,15 +66,20 @@ for i = 1:N
     %[V,~] = eigs(realPos'*realPos,2);
     %realPosProj = realPos*V;
     realPosPatch.Nodes.Pos = realPos;
-    [reflections(i),rotations(i)] = alignPatchesLSregis(realPosPatch,patches{i,1},realPosPatch.Nodes.Name);
+    [reflections(i),rotations(i),~,res1,res2] = alignPatchesLSregis(realPosPatch,patches{i,1},realPosPatch.Nodes.Name);
+    rotations(i) = conj(rotations(i));
+    res(i) = min(res1,res2);
 end
 %%
 B = sparse(A >= 2);
 pRef = diag(reflections)*B*diag(reflections);
 pRot = diag(rotations)*B*diag(rotations.^-1);
 refErr = pRef - patchReflection;
-rotErr = pRot - patchRotation;
-plot(sum(abs(refErr/2))./sum(abs(B)))
+rotErr = pRot.*conj(patchRotation);
+subplot(2,1,1)
+plot(sum(abs(refErr) >= 2)./sum(abs(B)))
+subplot(2,1,2)
+plot(sum(abs(angle(rotErr)))./sum(abs(B)))
 %%
 subplot(2,1,1)
 plotPatch(patches{i,1})
@@ -79,6 +87,29 @@ axis('equal')
 subplot(2,1,2)
 plotPatch(patches{i,1},x(cellfun(@str2num,patches{i,1}.Nodes.Name),:));
 axis('equal')
+%%
+ind = patchReflection(i,:) ~= 0;
+subplot(2,1,1)
+plot(A(i,ind));
+subplot(2,1,2)
+plot(angle(rotErr(i,ind)));
+%%
+for i = 1:N
+    if(reflections(i) == -1)
+        patches{i,1}.Nodes.Pos(:,2) = -patches{i,1}.Nodes.Pos(:,2);
+    end
+end
+%%
+z = triu(patchRotation);
+for i = 1:N
+    if(reflections(i) == -1)
+        z(i,:) = conj(z(i,:));
+    end
+end
+z = z+z';
+Z = sparse(diag(sum(abs(z),2).^(-1)))*z;
+[V,D] = eigs(Z,5)
+plot(abs(V(:,1)))
 %%
 %Q1: what is the prescribed size in page 25?
 %Q1.5: how to split a patch that is too big?

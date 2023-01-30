@@ -44,10 +44,6 @@ if(isnan(rotation) || isnan(rotationReflected))
     return
 end
 
-% scatter(real(patch1Pos),imag(patch1Pos),'filled')
-% hold on
-% scatter(real(patch2Pos),imag(patch2Pos))
-% scatter(real(patch2ReflectedPos),imag(patch2ReflectedPos),50)
 
 unreflectedViolations = 0;
 reflectedViolations = 0;
@@ -66,12 +62,17 @@ for i = 1:size(patch1Pos)
     end
 end
 
-if(unreflectedViolations <= reflectedViolations)
+if(unreflectedViolations < reflectedViolations)
     reflection = 1;
 else
     reflection = -1;
     rotation = rotationReflected;
 end
+
+% plotPatch(patch1,patch1Pos);
+% hold on
+% plotPatch(patch2,patch2Pos);
+% plotPatch(patch2,patch2ReflectedPos);
 
 
 end
