@@ -39,12 +39,7 @@ plot(p,'XData',x(:,1),'YData',x(:,2),'ZData',zeros(length(x),1));
 figure
 id = [i ; neighboringNodes];
 plot(p,'XData',dataPoints(id,1),'YData',dataPoints(id,2),'ZData',dataPoints(id,2));
-%%
-N = 1907;
-t = 2*(randi(2,N,1)-1.5);
-gamma = sparse(diag(t)*B*diag(t.^-1));
-T = sign(rand(N,N)-0.2);
-z = gamma.*T;
+
 %%
 z = sparse(patchRotation);
 Z = sparse(diag(sum(abs(z),2).^(-1)))*z;
@@ -68,31 +63,32 @@ for i = 1:N
     realPosPatch.Nodes.Pos = realPos;
     [reflections(i),rotations(i),~,res1,res2] = alignPatchesLSregis(realPosPatch,patches{i,1},realPosPatch.Nodes.Name);
     rotations(i) = conj(rotations(i));
+    reflections(i) = reflections(i);
     res(i) = min(res1,res2);
 end
 %%
 B = sparse(A >= 2);
 pRef = diag(reflections)*B*diag(reflections);
 pRot = diag(rotations)*B*diag(rotations.^-1);
-refErr = pRef - patchReflection;
+refErr = pRef.*patchReflection;
 rotErr = pRot.*conj(patchRotation);
 subplot(2,1,1)
-plot(sum(abs(refErr) >= 2)./sum(abs(B)))
+plot(sum(refErr == -1)./sum(abs(B)))
 subplot(2,1,2)
 plot(sum(abs(angle(rotErr)))./sum(abs(B)))
-%%
+%% Plot patch with localized position and with real position
 subplot(2,1,1)
 plotPatch(patches{i,1})
 axis('equal')
 subplot(2,1,2)
 plotPatch(patches{i,1},x(cellfun(@str2num,patches{i,1}.Nodes.Name),:));
 axis('equal')
-%%
-ind = patchReflection(i,:) ~= 0;
+%% Plot patch relative reflection error
+ind = find(A(i,:) >= 2);
 subplot(2,1,1)
 plot(A(i,ind));
 subplot(2,1,2)
-plot(angle(rotErr(i,ind)));
+plot(refErr(i,ind));
 %%
 for i = 1:N
     if(reflections(i) == -1)
@@ -100,15 +96,26 @@ for i = 1:N
     end
 end
 %%
+gamma = sparse(diag(reflections)*B*diag(reflections.^-1));
+T = sign(rand(N,N)-0.008);
+T = triu(T);
+T = T+T';
+z = gamma.*T;
+Z = sparse(diag(sum(abs(z),2).^(-1)))*z;
+[V,D] = eigs(Z,5)
+rot = V(:,1)./abs(V(:,1));
+plot(abs(V(:,1)))
+%%
 z = triu(patchRotation);
 for i = 1:N
-    if(reflections(i) == -1)
+    if(ref(i) == -1)
         z(i,:) = conj(z(i,:));
     end
 end
 z = z+z';
 Z = sparse(diag(sum(abs(z),2).^(-1)))*z;
 [V,D] = eigs(Z,5)
+rot = V(:,1)./abs(V(:,1));
 plot(abs(V(:,1)))
 %%
 %Q1: what is the prescribed size in page 25?

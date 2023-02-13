@@ -33,12 +33,15 @@ for i = 1:N
     for j = (i+1):N
         if(adjacencySquared(patches{i,2},patches{j,2}) > 0)
             commonNodes = (intersect(patches{i,1}.Nodes.Name, patches{j,1}.Nodes.Name));
-            C(i,j) = length(commonNodes);
             if(length(commonNodes) >= 3)
                 [reflection,rotation,translation,Res(i,j,1),Res(i,j,2)] = alignPatchesLSregis(patches{i,1},patches{j,1},commonNodes);
                 patchReflection(i,j) = reflection;
                 patchRotation(i,j) = rotation;
                 patchTranslation(i,j) = translation;
+                
+                C(i,j) = min(Res(i,j,1),Res(i,j,2));
+                C(j,i) = C(i,j);
+                
             elseif(length(commonNodes) == 2)
                 [reflection,rotation,Val(i,j,1),Val(i,j,2)] = alignPatchesCombScore(patches{i,1},patches{j,1}, commonNodes,graphDistance,rho);
                 patchReflection(i,j) = reflection;

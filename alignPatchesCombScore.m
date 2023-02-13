@@ -62,7 +62,10 @@ for i = 1:size(patch1Pos)
     end
 end
 
-if(unreflectedViolations < reflectedViolations)
+if(unreflectedViolations == reflectedViolations)
+    reflection = 0;
+    rotation = 0;
+elseif(unreflectedViolations < reflectedViolations)
     reflection = 1;
 else
     reflection = -1;
@@ -73,6 +76,5 @@ end
 % hold on
 % plotPatch(patch2,patch2Pos);
 % plotPatch(patch2,patch2ReflectedPos);
-
 
 end

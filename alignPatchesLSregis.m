@@ -15,11 +15,32 @@ function [reflection,rotation,translation,residualNonReflected,residualReflected
 %all the data points and rotate the graph by multiplying by the points by
 %e^(i*theta)
 
+% CN = cellfun(@str2num,commonNodes);
+% p1 = cellfun(@str2num,patch1.Nodes.Name);
+% patch1Pos(p1,:) = patch1.Nodes.Pos;
+% patch1Pos = patch1Pos(CN,:);
+% [~,idx] = intersect(A,B,'stable')
+
 %Use the patches' subgraphs with their common nodes and transform their position to complex numbers:
 patch1 = subgraph(patch1,commonNodes);
 patch1Pos = patch1.Nodes.Pos(:,1) + 1i *  patch1.Nodes.Pos(:,2);
 patch2 = subgraph(patch2,commonNodes);
 patch2Pos = patch2.Nodes.Pos(:,1) + 1i *  patch2.Nodes.Pos(:,2);
+
+%If the area of the convex hull of the patch is 0 we can't align the
+%patches (in this case the function convhull will give an exception)
+try
+    [~,convhullArea] = convhull(real(patch1Pos),imag(patch1Pos));
+    [~,convhullArea] = convhull(real(patch2Pos),imag(patch2Pos));
+catch
+    reflection = 0;
+    rotation = 0;
+    translation = 0;
+    residualNonReflected = 0;
+    residualReflected = 0;
+    return 
+end
+
 
 
 %We solve 2 least squares problems, Ax = b, conj(A)x = b:
@@ -53,8 +74,11 @@ translation = result(2) + (abs(result(1))-1) * meanPatch2 *rotation;
 residualNonReflected = xResidual;
 residualReflected = yResidual;
 
+
+
 % plotPatch(patch1,patch1Pos)
 % hold on
 % plotPatch(patch2,patch2Pos*x(1)+x(2));
 % plotPatch(patch2,conj(patch2Pos)*y(1)+y(2));
+% axis('equal')
 end

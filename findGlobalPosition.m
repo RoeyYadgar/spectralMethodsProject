@@ -7,9 +7,7 @@ function posNodes = findGlobalPosition(M,patches,reflections,rotations)
 %   patchTranslation - NxN matrix of relative translation between patches
 %outputs:
 %   posNodes - Mx2 matrix of x,y coordinates of the M nodes
-% % %   reflections - Nx1 vector of global reflection of each patch
-% % %   rotations - Nx1 vector of global rotations of each patch
-% % %   translations - Nx1 vector of global translations of each patch
+
 
 % %for relfection and rotation matrices - normalize each row by the degree of
 % %the patch and find biggest eigenvector
@@ -27,10 +25,15 @@ for i = 1:N
     patchEdges = adjacency(patches{i,1});
     patchPos = patches{i,1}.Nodes.Pos;
     patchPos = patchPos(:,1) + 1i*patchPos(:,2);
+    %Align the patch to the global coordinate system by applying it's
+    %inverse transformation
     if(reflections(i) == -1)
         patchPos = conj(patchPos);
     end
-    patchPos = patchPos * rotations(i);
+    patchPos = patchPos * conj(rotations(i));
+    
+    %Loop over all the edges of the patch and sum the edge 'vector'
+    %(complex valued) 
     for j = 1:(size(patchEdges,1))
         for k = (j+1):size(patchEdges,2)
             if(patchEdges(j,k) == 1)
@@ -50,9 +53,20 @@ for i = 1:N
     end
 end
 
+%while summing the same edge over different patches we might sum them in the
+%opposite direction (ie patchPos(j) - patchPos(i) instead of patchPos(i) -
+%patchPos(j)) and we will store it in edgeMat(j,i) instead of edgeMat(i,j)
+% - to get the total sum with the same direction we can substract the
+% transposed matrix from itself. similarly edge counter can be summed with
+% its transposed matrix.
+%we can then take the upper triangular part of it since the j-th,i-th value will
+%generate the same equation as the i-th,j-th value in the Least Squares
+%problem (with a different sign)
 edgeMat = triu(edgeMat - edgeMat.');
 edgeCounter = triu(edgeCounter + edgeCounter');
 
+%Build the Least Squares Matrix T - each row corresponds to an edge in the
+%graph 
 [a,b] = find(edgeCounter > 0);
 edgeVector = zeros(size(a));
 T = sparse(size(a,1),M);
@@ -62,6 +76,7 @@ for i = 1:length(a)
     T(i,b(i)) = -edgeCounter(a(i),b(i));
 end
 
+%Solve the Least Squares problem 
 posNodesComplex = T\edgeVector;
 posNodes = zeros(M,2);
 posNodes(:,1) = real(posNodesComplex);

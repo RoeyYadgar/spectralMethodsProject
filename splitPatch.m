@@ -1,5 +1,4 @@
 function subpatches = splitPatch(patch)
-%UNUSED
 patchCopy = subgraph(patch,[2:size(patch.Nodes,1)]);
 
 A = full(adjacency(patchCopy));
