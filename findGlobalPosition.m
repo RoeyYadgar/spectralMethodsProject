@@ -9,47 +9,34 @@ function posNodes = findGlobalPosition(M,patches,reflections,rotations)
 %   posNodes - Mx2 matrix of x,y coordinates of the M nodes
 
 
-% %for relfection and rotation matrices - normalize each row by the degree of
-% %the patch and find biggest eigenvector
-% normalizationMat = diag(sum(abs(patchReflection),2).^-1);
-% [evRef,~] = eigs(normalizationMat*patchReflection,1);
-% reflections = sign(evRef);
-% [evRot,~] = eigs(normalizationMat*patchRotation,1);
-% rotations = evRot./abs(evRot);
-
 edgeMat = sparse(M,M);
 edgeCounter = sparse(M,M);
 N = size(reflections,1);
 
 for i = 1:N
-    patchEdges = adjacency(patches{i,1});
-    patchPos = patches{i,1}.Nodes.Pos;
-    patchPos = patchPos(:,1) + 1i*patchPos(:,2);
-    %Align the patch to the global coordinate system by applying it's
-    %inverse transformation
-    if(reflections(i) == -1)
-        patchPos = conj(patchPos);
-    end
-    patchPos = patchPos * conj(rotations(i));
-    
-    %Loop over all the edges of the patch and sum the edge 'vector'
-    %(complex valued) 
-    for j = 1:(size(patchEdges,1))
-        for k = (j+1):size(patchEdges,2)
-            if(patchEdges(j,k) == 1)
-                node1 = str2double(patches{i,1}.Nodes.Name{j});
-                node2 = str2double(patches{i,1}.Nodes.Name{k});
-                edgeMat(node1,node2) = edgeMat(node1,node2) + patchPos(j)-patchPos(k);
-                edgeCounter(node1,node2) = edgeCounter(node1,node2) +1;
-            end
-            
-            
+    if(reflections(i) ~= 0) %patches that aren't in the biggest connected component (of the patch graph) cannot be aligned and will have reflection,rotation = 0 
+        patchEdges = adjacency(patches{i,1});
+        patchPos = patches{i,1}.Nodes.Pos;
+        patchID = patches{i,1}.Nodes.ID;
+        %Align the patch to the global coordinate system by applying it's
+        %inverse transformation
+        if(reflections(i) == -1)
+            patchPos = conj(patchPos);
         end
-        
-        
-    
-    
-    
+        patchPos = patchPos * conj(rotations(i));
+
+        %Loop over all the edges of the patch and sum the edge 'vector'
+        %(complex valued) 
+        for j = 1:(size(patchEdges,1))
+            for k = (j+1):size(patchEdges,2)
+                if(patchEdges(j,k) == 1)
+                    node1 = patchID(j);
+                    node2 = patchID(k);
+                    edgeMat(node1,node2) = edgeMat(node1,node2) + patchPos(j)-patchPos(k);
+                    edgeCounter(node1,node2) = edgeCounter(node1,node2) +1;
+                end
+            end
+        end
     end
 end
 

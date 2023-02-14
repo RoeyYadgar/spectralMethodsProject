@@ -22,7 +22,7 @@ for i = 1:N
     patches(patchNum : (patchNum + length(starGraphPatches)-1),2) = {i};
     for p = 1:length(starGraphPatches)
         patches{patchNum + p - 1,1}.Nodes.Pos = localizePatch(starGraphPatches{p});
-        
+        patches{patchNum + p - 1,1}.Nodes.ID = cellfun(@str2num,starGraphPatches{p}.Nodes.Name);     
     end
     patchNum = patchNum + length(starGraphPatches);
     

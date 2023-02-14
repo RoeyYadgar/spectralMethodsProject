@@ -65,7 +65,8 @@ while(iterativeDifference > 1e-5) %perfrom iterations until the chance between c
     
 end
 
-
+%Convert nodePos to complex pos
+nodesPos = nodesPos(:,1) + 1i * nodesPos(:,2);
 
 
 end

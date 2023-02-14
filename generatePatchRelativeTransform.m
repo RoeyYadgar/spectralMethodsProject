@@ -29,10 +29,11 @@ C = sparse(N,N);
 A = sparse(N,N);
 Res = zeros(N,N,2);
 Val = zeros(N,N,2);
+
 for i = 1:N
     for j = (i+1):N
         if(adjacencySquared(patches{i,2},patches{j,2}) > 0)
-            commonNodes = (intersect(patches{i,1}.Nodes.Name, patches{j,1}.Nodes.Name));
+            commonNodes = (intersect(patches{i,1}.Nodes.ID, patches{j,1}.Nodes.ID));
             if(length(commonNodes) >= 3)
                 [reflection,rotation,translation,Res(i,j,1),Res(i,j,2)] = alignPatchesLSregis(patches{i,1},patches{j,1},commonNodes);
                 patchReflection(i,j) = reflection;
@@ -52,13 +53,12 @@ for i = 1:N
             A(j,i) = A(i,j);
         end
     end
+
 end
 
 patchReflection = patchReflection + patchReflection'; %Reflection between Pj and Pi is the same as Pi and Pj
 patchRotation = patchRotation + patchRotation'; %Rotation between between Pj and Pi is conjugate of the rotation between Pi and Pj (the ' operator in matlab is conjugate transpose)
 patchTranslation = patchTranslation - patchTranslation.'; %Translation between Pj and Pi is negative the tranlsation of Pi and Pj
-
-
 
 
 end

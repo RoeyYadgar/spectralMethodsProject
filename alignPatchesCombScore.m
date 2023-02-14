@@ -11,15 +11,21 @@ function [reflection,rotation,unreflectedViolations,reflectedViolations] = align
 %   reflection - reflection of the rigid tranformation (1 or -1)
 %   rotation - rotation of the rigid transformation (e^(i*theta))
 
-patch1Pos = patch1.Nodes.Pos(:,1) + 1i *  patch1.Nodes.Pos(:,2);
-patch2Pos = patch2.Nodes.Pos(:,1) + 1i *  patch2.Nodes.Pos(:,2);
+% patch1Pos = patch1.Nodes.Pos(:,1) + 1i *  patch1.Nodes.Pos(:,2);
+% patch2Pos = patch2.Nodes.Pos(:,1) + 1i *  patch2.Nodes.Pos(:,2);
+patch1Pos = patch1.Nodes.Pos;
+patch2Pos = patch2.Nodes.Pos;
 patch2ReflectedPos = conj(patch2Pos);
 
-node1IndPatch1 = find(strcmp(commonNodes{1},patch1.Nodes.Name));
-node1IndPatch2 = find(strcmp(commonNodes{1},patch2.Nodes.Name));
-node2IndPatch1 = find(strcmp(commonNodes{2},patch1.Nodes.Name));
-node2IndPatch2 = find(strcmp(commonNodes{2},patch2.Nodes.Name));
+nodeID1 = patch1.Nodes.ID;
+[~,~,idx1] = intersect(commonNodes,nodeID1,'stable');
+node1IndPatch1 = idx1(1);
+node2IndPatch1 = idx1(2);
 
+nodeID2 = patch2.Nodes.ID;
+[~,~,idx2] = intersect(commonNodes,nodeID2,'stable');
+node1IndPatch2 = idx2(1);
+node2IndPatch2 = idx2(2);
 
 
 %Shift the patches such that node1 is at the origin in both patches
@@ -50,7 +56,7 @@ reflectedViolations = 0;
 for i = 1:size(patch1Pos)
     for j = 1:size(patch2Pos)
         if(i ~= node1IndPatch1 && i ~= node2IndPatch1 && j~= node1IndPatch2 && j ~= node2IndPatch2)%only check for viloations when the nodes are neither of the common nodes
-            edgeExists = graphDistance(str2double(patch1.Nodes.Name{i}),str2double(patch2.Nodes.Name{j})) > 0;
+            edgeExists = graphDistance(nodeID1(i),nodeID2(j)) > 0;
             nodesDistance = abs(patch1Pos(i) - patch2Pos(j));
             nodesDistanceReflected = abs(patch1Pos(i) - patch2ReflectedPos(j));
             

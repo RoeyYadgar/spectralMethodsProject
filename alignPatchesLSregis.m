@@ -15,17 +15,11 @@ function [reflection,rotation,translation,residualNonReflected,residualReflected
 %all the data points and rotate the graph by multiplying by the points by
 %e^(i*theta)
 
-% CN = cellfun(@str2num,commonNodes);
-% p1 = cellfun(@str2num,patch1.Nodes.Name);
-% patch1Pos(p1,:) = patch1.Nodes.Pos;
-% patch1Pos = patch1Pos(CN,:);
-% [~,idx] = intersect(A,B,'stable')
-
 %Use the patches' subgraphs with their common nodes and transform their position to complex numbers:
-patch1 = subgraph(patch1,commonNodes);
-patch1Pos = patch1.Nodes.Pos(:,1) + 1i *  patch1.Nodes.Pos(:,2);
-patch2 = subgraph(patch2,commonNodes);
-patch2Pos = patch2.Nodes.Pos(:,1) + 1i *  patch2.Nodes.Pos(:,2);
+[~,~,idx1] = intersect(commonNodes,patch1.Nodes.ID,'stable');
+patch1Pos = patch1.Nodes.Pos(idx1);
+[~,~,idx2] = intersect(commonNodes,patch2.Nodes.ID,'stable');
+patch2Pos = patch2.Nodes.Pos(idx2);
 
 %If the area of the convex hull of the patch is 0 we can't align the
 %patches (in this case the function convhull will give an exception)

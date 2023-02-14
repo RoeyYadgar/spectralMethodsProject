@@ -1,7 +1,7 @@
 function [reflections,rotations] = findGlobalTransformation(patchReflection,patchRotation,Adj)
 
 N = length(patchReflection);
-z = patchReflection.*(Adj~=3);
+z = patchReflection;
 connectedPatches = find(conncomp(graph(abs(z))) == 1);
 z = z(connectedPatches,connectedPatches);
 Z = sparse(diag(sum(abs(z),2).^(-1)))*z;
