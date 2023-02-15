@@ -1,10 +1,11 @@
-function posNodes = findGlobalPosition(M,patches,reflections,rotations)
+function [posNodes,nonLocalizedNodes] = findGlobalPosition(M,patches,reflections,rotations)
 %finds the global position of the nodes (up to a rigid transformation)
 %inputs:
 %   M - number of total Nodes in the data
-%   patchReflection - NxN matrix of relative reflection between patches
-%   patchRotation - NxN matrix of relative rotation between patches
-%   patchTranslation - NxN matrix of relative translation between patches
+%   patches - N x 2 cell matrix of patches (first column) and their
+%       corresponding star node (second column)
+%   reflections - Nx1 vector of global reflection of each patch
+%   rotations - Nx1 vector of global rotation of each patch
 %outputs:
 %   posNodes - Mx2 matrix of x,y coordinates of the M nodes
 
@@ -69,6 +70,10 @@ posNodes = zeros(M,2);
 posNodes(:,1) = real(posNodesComplex);
 posNodes(:,2) = imag(posNodesComplex);
 
+%If a node only appears in patches that are not in the biggest
+%connected component we won't be able to localize it and their corrseponding
+%column in the matrix T will be full of zeros.
+nonLocalizedNodes = find(sum(abs(T)) == 0);
 
 
 end

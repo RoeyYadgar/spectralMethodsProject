@@ -1,4 +1,12 @@
-function [reflections,rotations] = findGlobalTransformation(patchReflection,patchRotation,Adj)
+function [reflections,rotations] = findGlobalTransformation(patchReflection,patchRotation)
+%finds the global transformation of the patches (up to a rigid transformation)
+%inputs:
+%   patchReflection - NxN matrix of relative reflection between patches
+%   patchRotation - NxN matrix of relative rotation between patches
+%outputs:
+%   reflections - Nx1 vector of global reflection of each patch
+%   rotations - Nx1 vector of global rotation of each patch
+
 
 N = length(patchReflection);
 z = patchReflection;
@@ -8,7 +16,6 @@ Z = sparse(diag(sum(abs(z),2).^(-1)))*z;
 [Vref,~] = eigs(Z,1);
 reflections = zeros(N,1);
 reflections(connectedPatches) = sign(Vref);
-plot(abs(Vref));
 
 r = triu(patchRotation);
 for i = 1:N
@@ -24,4 +31,3 @@ rotations = zeros(size(reflections));
 rotations(connectedPatches) = Vrot(:,1)./abs(Vrot(:,1));
 
 
-x = 1;
