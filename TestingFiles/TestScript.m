@@ -49,27 +49,28 @@ plot(abs(V(:,1)))
 Y = (dataPoints(:,1)-dataPoints(:,1)').^2 + (dataPoints(:,2)-dataPoints(:,2)').^2 +(dataPoints(:,3)-dataPoints(:,3)').^2;
 Y = sqrt(Y);
 x = cmdscale(Y,2);
+x = x(:,1) + 1i*x(:,2);
 %%
 N = length(patches);
-reflections = zeros(N,1);
-rotations = zeros(N,1);
+refs = zeros(N,1);
+rots = zeros(N,1);
 res = zeros(N,1);
 for i = 1:N
     realPosPatch = patches{i,1};
 %     realPosPatch.Nodes.Pos = 
-    realPos = x(cellfun(@str2num,patches{i,1}.Nodes.Name),:);
+    realPos = x(cellfun(@str2num,patches{i,1}.Nodes.Name));
     %[V,~] = eigs(realPos'*realPos,2);
     %realPosProj = realPos*V;
     realPosPatch.Nodes.Pos = realPos;
-    [reflections(i),rotations(i),~,res1,res2] = alignPatchesLSregis(realPosPatch,patches{i,1},realPosPatch.Nodes.Name);
-    rotations(i) = conj(rotations(i));
-    reflections(i) = reflections(i);
+    [refs(i),rots(i),~,res1,res2] = alignPatchesLSregis(realPosPatch,patches{i,1},realPosPatch.Nodes.ID);
+    rots(i) = conj(rots(i));
+    refs(i) = refs(i);
     res(i) = min(res1,res2);
 end
 %%
-B = sparse(A >= 2);
-pRef = diag(reflections)*B*diag(reflections);
-pRot = diag(rotations)*B*diag(rotations.^-1);
+B = patchReflection~=0;
+pRef = diag(refs)*B*diag(refs);
+pRot = diag(rots)*B*diag(rots.^-1);
 refErr = pRef.*patchReflection;
 rotErr = pRot.*conj(patchRotation);
 subplot(2,1,1)
@@ -89,12 +90,7 @@ subplot(2,1,1)
 plot(A(i,ind));
 subplot(2,1,2)
 plot(refErr(i,ind));
-%%
-for i = 1:N
-    if(reflections(i) == -1)
-        patches{i,1}.Nodes.Pos(:,2) = -patches{i,1}.Nodes.Pos(:,2);
-    end
-end
+
 %%
 gamma = sparse(diag(reflections)*B*diag(reflections.^-1));
 T = sign(rand(N,N)-0.008);
@@ -117,6 +113,12 @@ Z = sparse(diag(sum(abs(z),2).^(-1)))*z;
 [V,D] = eigs(Z,5)
 rot = V(:,1)./abs(V(:,1));
 plot(abs(V(:,1)))
+%% main
+patches = splitGraphToGloballiyRigidsComps(G);
+[patchReflection,patchRotation,~] = generatePatchRelativeTransform(patches,W,rho);
+[reflections,rotations] = findGlobalTransformation(patchReflection,patchRotation,A);
+posNodes = findGlobalPosition(1097,patches,reflections,rotations);
+
 %%
 %Q1: what is the prescribed size in page 25?
 %Q1.5: how to split a patch that is too big?
