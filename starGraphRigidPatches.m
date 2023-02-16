@@ -21,7 +21,7 @@ counter = 1;
 for i = 1:numComp
     patchesNodes = unique(SGcopy.Edges{bins2connected == i,1}(:)); %get all the nodes of the corresponding edges of the component 
     patch = subgraph(SG,[starNodeName ; patchesNodes]);
-    if(height(patch.Nodes) >= inf)
+    if(height(patch.Nodes) >= 24)
         subpatches = splitPatch(patch);
         patches{counter} = subpatches{1};
         patches{counter+1} = subpatches{2};
