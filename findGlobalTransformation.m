@@ -1,4 +1,4 @@
-function [reflections,rotations] = findGlobalTransformation(patchReflection,patchRotation)
+function [reflections,rotations,correctedPatchRotation] = findGlobalTransformation(patchReflection,patchRotation)
 %finds the global transformation of the patches (up to a rigid transformation)
 %inputs:
 %   patchReflection - NxN matrix of relative reflection between patches
@@ -6,6 +6,8 @@ function [reflections,rotations] = findGlobalTransformation(patchReflection,patc
 %outputs:
 %   reflections - Nx1 vector of global reflection of each patch
 %   rotations - Nx1 vector of global rotation of each patch
+%   correctedPatchRotation - NxN patchRotation matrix after reflection
+%       correction
 
 %the patch graph is not necessarily connected (usually there will be one
 %large connected component and a few very small connected component) - we
@@ -33,10 +35,19 @@ for i = 1:N
 end
 r = r(connectedPatches,connectedPatches);
 r = r+r';
+correctedPatchRotation = zeros(length(reflections),length(reflections));
+correctedPatchRotation(connectedPatches,connectedPatches) = r;
 
 R = sparse(diag(sum(abs(r),2).^(-1)))*r;
 [Vrot,~] = eigs(R,1);
 rotations = zeros(size(reflections));
 rotations(connectedPatches) = Vrot(:,1)./abs(Vrot(:,1));
+
+%Generate plot of eigenvectors of reflections and rotations
+Vref = Vref/sum(abs(Vref))*length(Vref);
+histogram(Vref);
+figure
+Vrot = Vrot/sum(abs(Vrot))*length(Vrot);
+scatter(real(Vrot),imag(Vrot));
 
 
