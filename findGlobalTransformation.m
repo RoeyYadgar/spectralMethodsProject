@@ -43,11 +43,14 @@ R = sparse(diag(sum(abs(r),2).^(-1)))*r;
 rotations = zeros(size(reflections));
 rotations(connectedPatches) = Vrot(:,1)./abs(Vrot(:,1));
 
-%Generate plot of eigenvectors of reflections and rotations
-Vref = Vref/sum(abs(Vref))*length(Vref);
-histogram(Vref);
-figure
-Vrot = Vrot/sum(abs(Vrot))*length(Vrot);
-scatter(real(Vrot),imag(Vrot));
+% %Generate plot of eigenvectors of reflections and rotations
+% figure
+% Vref = Vref/sum(abs(Vref))*length(Vref);
+% histogram(Vref,10);
+% title('histogram of entries of the top eigenvector of the matrix Z')
+% figure
+% Vrot = Vrot/sum(abs(Vrot))*length(Vrot);
+% scatter(real(Vrot),imag(Vrot));
+% title('scatter plot of entries of the top eigenvector of the matrix R')
 
 

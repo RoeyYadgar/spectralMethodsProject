@@ -120,6 +120,28 @@ patches = splitGraphToGloballiyRigidsComps(G);
 posNodes = findGlobalPosition(1097,patches,reflections,rotations);
 
 %%
+
+c = 1;
+patches3 = patches;
+
+for i = 1:1097
+    nodes1 = zeros(10,1);
+    nodes2 = zeros(10,1);
+    N = 1;
+    while(patches{c + N -1,2} == i)
+        nodes1(N) = height(patches{c + N -1,1}.Nodes)*0 + mean(patches{c+N-1,1}.Nodes.Pos);
+        nodes2(N) = height(patches2{c + N -1,1}.Nodes)*0 + mean(patches2{c+N-1,1}.Nodes.Pos);
+        N = N+1;
+    end
+    N = N-1;
+    [~,~,idx] = intersect(nodes1(1:N),nodes2(1:N),'stable')
+    for j = 1:N
+        patches3(c+N-1,:) = patches(c+idx(j) -1,:);
+    end
+        
+    c = c+N;
+end
+%%
 %Q1: what is the prescribed size in page 25?
 %Q1.5: how to split a patch that is too big?
 %Q2: unit measurements of rho and database

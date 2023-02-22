@@ -29,7 +29,10 @@ meanPos = mean(realPos);
 
 estimationError = sqrt(sum(vecnorm(realPos-estimatedPos,2,2).^2))/sqrt(sum(vecnorm(realPos-meanPos,2,2).^2));
 
-% plotPatch(graph1)
-% hold on
-% plotPatch(graph2,estimatedPos)
+figure
+plotPatch(graph1)
+hold on
+plotPatch(graph2,estimatedPos)
+title('Reconstruction of the data points with the ASAP alogrithm')
+legend('Ground truth Position','Estimated Position')
 end
