@@ -32,7 +32,7 @@ patchRotErrEig = patchRotationGT.*conj(patchRotationEig);
 epsReig = mean(abs(angle(patchRotErrEig(patchRotErrEig ~= 0))))/pi*180;
 outliersReig = 100*sum(abs(angle(patchRotErrEig(patchRotErrEig ~= 0))/pi*180) > 10) / sum(sum(patchRotErrEig ~= 0));
 
-statistics = full([tau ; epsZinp ; epsZeig ; epsRinp ; epsReig ; outliersRinp ; outliersReig]);
+statistics = full({tau ; epsZinp ; epsZeig ; epsRinp ; epsReig ; outliersRinp ; outliersReig});
 
 
 

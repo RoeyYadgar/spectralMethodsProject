@@ -1,7 +1,7 @@
 function [aneScore, alignmentStats] = asapAlg(dataPoints,rho,eta)
 
 % profile on
-G = generateGraphDiscModel(dataPoints,rho);
+G = generateGraphDiscModel(dataPoints,rho,eta);
 W = sparse(adjacency(G,'weighted'));
 patches = splitGraphToGloballiyRigidsComps(G);
 

@@ -39,6 +39,11 @@ end
 %Perfrom classical MDS:
 nodesPos = cmdscale(estimatedDistMatrix,2);
 
+if(size(nodesPos,2) ~= 2) %sometime a graph embedding can be on a single line (in this case dont perform majorization techinque)
+    nodesPos = nodesPos(:,1) + 1i * 0;
+    return
+end
+
 %Perfrom iteartive majorization techinque to minimize the stress function:
 nodeDegs = degree(patch);
 updatedNodesPos = zeros(size(nodesPos));
