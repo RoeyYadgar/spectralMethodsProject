@@ -48,3 +48,5 @@ figure
 uitable('Data',resultTable{:,:},'ColumnName',resultTable.Properties.VariableNames,...
     'RowName',resultTable.Properties.RowNames,'Units', 'Normalized', 'Position',[0, 0, 1, 0.93],'fontSize',10);
 title('Patch Alignment Statistics of the ASAP algorithm')
+
+
