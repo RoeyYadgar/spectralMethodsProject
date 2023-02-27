@@ -34,5 +34,5 @@ plotPatch(graph1)
 hold on
 plotPatch(graph2,estimatedPos)
 % title('Reconstruction of the data points with the ASAP alogrithm')
-legend('Ground truth Position','Estimated Position')
+% legend('Ground truth Position','Estimated Position')
 end

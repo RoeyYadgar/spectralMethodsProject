@@ -32,9 +32,19 @@ resultTable = table('Size',[length(noiseLevel) 9],'VariableTypes',{'double','dou
 figure
 for i = 1:length(noiseLevel)
     subplot(2,3,i)
-    title(['Reconstruction of the data points with the ASAP algorithm' newline 'Eta = ' num2str(100*noiseLevel(i)) ' %']);
     [aneScore,alignmentStats] = asapAlg(dataPoints,rho,noiseLevel(i));
     resultTable(i,'NoiseLevel') = {noiseLevel(i)};
     resultTable(i,'ANEScore') = {aneScore};
     resultTable(i,3:end) = alignmentStats';
+    if(i == 2)
+        titletext = ['Reconstruction of the data points with the ASAP algorithm' newline 'Eta = ' num2str(100*noiseLevel(i)) ' %'];
+    else
+        titletext = ['Eta = ' num2str(100*noiseLevel(i)) ' %'];
+    end
+    title(titletext);
+    drawnow
 end
+figure
+uitable('Data',resultTable{:,:},'ColumnName',resultTable.Properties.VariableNames,...
+    'RowName',resultTable.Properties.RowNames,'Units', 'Normalized', 'Position',[0, 0, 1, 0.93],'fontSize',10);
+title('Patch Alignment Statistics of the ASAP algorithm')
