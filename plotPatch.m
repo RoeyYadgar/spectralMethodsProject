@@ -21,5 +21,6 @@ if(~isreal(pos))
 end
 
     
-plot(patch,'XData',xPos,'YData',yPos,'ZData',zPos)
+p = plot(patch,'XData',xPos,'YData',yPos,'ZData',zPos);
+p.LineWidth = 2;
 view(0,90)

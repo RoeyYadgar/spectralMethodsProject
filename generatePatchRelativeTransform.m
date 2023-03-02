@@ -25,7 +25,6 @@ N = size(patches,1); %number of total patches
 patchReflection = sparse(N,N);
 patchRotation = sparse(N,N);
 patchTranslation = sparse(N,N);
-C = sparse(N,N);
 A = sparse(N,N);
 Res = zeros(N,N,2);
 Val = zeros(N,N,2);
@@ -39,10 +38,7 @@ for i = 1:N
                 patchReflection(i,j) = reflection;
                 patchRotation(i,j) = rotation;
                 patchTranslation(i,j) = translation;
-                
-                C(i,j) = min(Res(i,j,1),Res(i,j,2));
-                C(j,i) = C(i,j);
-                
+                                
             elseif(length(commonNodes) == 2)
                 [reflection,rotation,Val(i,j,1),Val(i,j,2)] = alignPatchesCombScore(patches{i,1},patches{j,1}, commonNodes,graphDistance,rho);
                 patchReflection(i,j) = reflection;
