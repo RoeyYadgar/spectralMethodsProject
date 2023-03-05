@@ -9,6 +9,11 @@ function patches = starGraphRigidPatches(SG)
 %Remove all nodes of degree one
 SG = subgraph(SG,find(degree(SG) > 1));
 
+if(height(SG.Nodes) == 0) %If the graph is empty
+    patches = {};
+    return 
+end
+
 %Make a copy of the stargraph without the node and caluclate its
 %bi-connected components
 starNodeName = SG.Nodes{1,1};
