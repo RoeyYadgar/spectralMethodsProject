@@ -18,6 +18,7 @@ subplot(1,2,2)
 plotPatch(p2,nodes2);
 axis('equal')
 title('Globally Rigid Graph')
+
 %% Globally Rigid Components of Star Graph Example
 nodes = [0 0; -1 0; -1 -1; 0 1; 1 1; 1 0; 1 -0.5; 0.5 -1];
 v1 = [ones(1,7) [2 2 3 4 5 6 6 7]];
@@ -26,15 +27,17 @@ g = graph(v1,v2,1:length(v1),{'1','2','3','4','5','6','7','8'});
 g.Nodes.Pos = nodes;
 patches = starGraphRigidPatches(g);
 figure 
-subplot(2,1,1)
+set(gcf, 'Position',  [100, 100, 900, 400])
+subplot(1,2,1)
 plotPatch(g)
-title('Globally Rigid Components of Star Graph Example')
-subplot(2,1,2)
+set(gca,'xcolor','w','ycolor','w','xtick',[],'ytick',[])
+subplot(1,2,2)
 hold on
 for i = 1:length(patches)
     pos = patches{i}.Nodes.Pos;
-    plotPatch(patches{i},pos + mean(pos))
+    plotPatch(patches{i},pos + mean(pos) + [3,0])
 end
+set(gca,'xcolor','w','ycolor','w','xtick',[],'ytick',[])
 %% Combinatorial Score Method Example
 rng('default');
 rng(2);
@@ -51,18 +54,20 @@ ind2 = (n+1):(2*n+2);
 g1 =graph(adj(ind1,ind1));
 g2 = graph(adj(ind2,ind2));
 figure
-subplot(2,1,1)
+set(gcf, 'Position',  [100, 100, 900, 400])
+subplot(1,2,1)
 plotPatch(g,nodes)
 hold on
 plotPatch(g1,nodes(ind1,:))
 plotPatch(g2,nodes(ind2,:))
-legend('Cross Patch Edges','Edges in Patch 1','Edges in Patch 2')
-title(['Combinatorial Score Method Example' newline 'Correct Reflection'])
 
-subplot(2,1,2)
+title(['Correct Reflection'])
+
+subplot(1,2,2)
 nodes(ind2,1) = -nodes(ind2,1);
 plotPatch(g,nodes)
 hold on
 plotPatch(g1,nodes(ind1,:))
 title('Wrong Reflection')
 plotPatch(g2,nodes(ind2,:))
+legend('Cross Patch Edges','Edges in Patch 1','Edges in Patch 2')
