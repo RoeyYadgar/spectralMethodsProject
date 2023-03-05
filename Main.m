@@ -24,6 +24,10 @@ W = W-diag(diag(W)); %set the diagonal to 0 (it's not exactly 0 due to numerial 
 %Embed the data into a 2 dimensional space (so it can be plotted and compared to the estimated position)
 dataPoints = cmdscale(W,2);
 
+%Remove nodes with the exact same position
+[~,uniqueInd] = unique(dataPoints(:,1) + 10*dataPoints(:,2));
+dataPoints = dataPoints(uniqueInd,:);
+
 %%
 rho = 0.032;
 noiseLevel = 0:0.1:0.5;
