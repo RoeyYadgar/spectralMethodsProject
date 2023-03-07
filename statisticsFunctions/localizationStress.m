@@ -1,4 +1,10 @@
 function stressValue = localizationStress(patch)
+%computes stress function of the patch normalized by the number of edges
+%inputs:
+%   patch - patch graph
+%outputs:
+%   stressValue - stress function value of the patch
+
 patchDistanceMatrix = adjacency(patch,'weighted');
 N = length(patchDistanceMatrix);
 E = 0;
