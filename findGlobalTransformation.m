@@ -15,11 +15,12 @@ function [reflections,rotations,correctedPatchRotation] = findGlobalTransformati
 %tranformation of each patch in that component
 N = length(patchReflection);
 z = patchReflection;
-connectedPatches = find(conncomp(graph(abs(z))) == 1);
+connectedPatches = find(conncomp(graph(abs(z))) == mode(conncomp(graph(abs(z)))));
 z = z(connectedPatches,connectedPatches);
 
 Z = sparse(diag(sum(abs(z),2).^(-1)))*z;
 [Vref,~] = eigs(Z,1);
+
 reflections = zeros(N,1);
 reflections(connectedPatches) = sign(Vref);
 

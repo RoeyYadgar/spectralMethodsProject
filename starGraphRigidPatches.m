@@ -27,7 +27,7 @@ counter = 1;
 for i = 1:numComp
     patchesNodes = unique(SGcopy.Edges{bins2connected == i,1}(:)); %get all the nodes of the corresponding edges of the component 
     patch = subgraph(SG,[starNodeName ; patchesNodes]);
-    if(height(patch.Nodes) >= maxNodeSize)
+    if(height(patch.Nodes) >= maxNodeSize) %restrict patch size to maxNodeSize
         nodeDeg = degree(patch);
         [~,maxDegNodes] = maxk(nodeDeg,maxNodeSize);
         patches{counter} = subgraph(patch,maxDegNodes);
