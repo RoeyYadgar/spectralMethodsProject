@@ -1,5 +1,14 @@
 function statistics = alignmentStatistics(reflections,rotations,patchReflection,patchRotation,reflectionsGT,rotationsGT)
 %Calculates alignment statistics (table 4 in page 33 of the paper)
+%inputs:
+%   reflections - Nx1 vector of global reflection of each patch
+%   rotations - Nx1 vector of global rotation of each patch
+%   patchReflection - NxN matrix of relative reflection between patches
+%   patchRotation - NxN matrix of relative rotation between patches (after
+%       correction in findGlobalTransformation functino)
+%ouputs:    
+%   statistics - 7x1 cell array of alignment statistics from table 4, page
+%       33 in paper
 
 refErr = reflections.*reflectionsGT;
 tau = sum(refErr == -1)/sum(refErr ~= 0);
